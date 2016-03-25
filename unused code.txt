@@ -1,0 +1,102 @@
+
+//Parses the hex command and sets the appropriate colors(can probably be made much more compact)
+if(colorCommand == 0x0){
+  colorW,colorR,colorG,colorB = 0;
+}
+else if (colorCommand == 0x1){
+  colorW = 1;
+  colorR,colorG,colorB = 0;
+}
+else if (colorCommand == 0x2){
+  colorB = 1;
+  colorR,colorG,colorW = 0;
+}
+else if (colorCommand == 0x3){
+  colorW,colorB = 1;
+  colorR,colorG= 0;
+}
+else if (colorCommand == 0x4){
+  colorG = 1;
+  colorR,colorW,colorB = 0;
+}
+else if (colorCommand == 0x5){
+  colorW,colorG = 1;
+  colorR,colorB = 0;
+}
+else if (colorCommand == 0x6){
+  colorG,colorB = 1;
+  colorR,colorW = 0;
+}
+else if (colorCommand == 0x7){
+  colorW,colorG,colorB = 1;
+  colorR = 0;
+}
+else if (colorCommand == 0x8){
+  colorR = 1;
+  colorW,colorG,colorB = 0;
+}
+else if (colorCommand == 0x9){
+  colorW,colorR = 1;
+  colorG,colorB = 0;
+}
+else if (colorCommand == 0xA){
+  colorR,colorB = 1;
+  colorW,colorG = 0;
+}
+else if (colorCommand == 0xB){
+  colorW,colorR,colorB = 1;
+  colorG= 0;
+}
+else if (colorCommand == 0xC){
+  colorR,colorG = 1;
+  colorW,colorB = 0;
+}
+else if (colorCommand == 0xD){
+  colorW,colorR,colorG = 1;
+  colorB = 0;
+}
+else if (colorCommand == 0xE){
+  colorW = 0;
+  colorR,colorG,colorB = 1;
+}
+else if(colorCommand == 0xF){
+  colorR,colorG,colorB,colorW = 1;
+} 
+
+
+
+/*
+if(colorW,colorR,colorB,colorG == 1){
+  analogWrite(ledW,brightness);
+  analogWrite(ledR,brightness);
+  analogWrite(ledG,brightness);
+  analogWrite(ledB,brightness);
+}
+else if (colorR == 1 && colorW,colorB,colorG == 0){
+  analogWrite(ledR,brightness);
+}
+else if (colorG == 1 && colorR,colorB,colorW == 0){
+  analogWrite(ledG,brightness);
+}
+else if (colorB == 1 && colorR,colorW,colorG == 0){
+  analogWrite(ledW,brightness);
+}
+else if (colorR,colorB == 1 && colorW,colorG == 0){
+  analogWrite(ledR,brightness);
+  analogWrite(ledB,brightness);
+}
+else if (colorR,colorG == 1 && colorW,colorB == 0){
+  analogWrite(ledR,brightness);
+  analogWrite(ledG,brightness);
+}*/
+
+
+
+
+
+
+
+
+
+
+
