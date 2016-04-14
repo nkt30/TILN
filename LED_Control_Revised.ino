@@ -85,7 +85,7 @@ ISR(TIMER1_OVF_vect)        // interrupt service routine for maintaining blink r
 }
 
 // FUNCTIONS
-void recv_serial() // send data only when you receive data:
+int recv_serial() // Returns 1 if data was received, returns 0 otherwise.
 {
   if (Serial1.available() > 0) {
           // read the incoming byte:
@@ -94,15 +94,13 @@ void recv_serial() // send data only when you receive data:
           // say what you got:
           Serial1.print("I received: ");
           Serial1.println(newCommand, HEX);
+          return 1;
   }
-  return;
+  return 0;
 }
 
-void set_led(int color, int brightness, int blink_rate)
+int set_led() // Returns 1 if command is new, returns 0 otherwise.
 {
-  // Get serial input if available.
-  recv_serial();
-
   // If received command is newer, deconstruct into individual instructions.
   if (newCommand > oldCommand and newCommand != -1)
   {
@@ -111,15 +109,52 @@ void set_led(int color, int brightness, int blink_rate)
     color = (oldCommand >> COLORSHIFT) & COLOR;
     brightness = (oldCommand >> BRIGHTNESSSHIFT) & BRIGHTNESS;
     Serial.println("New command: Parsed");
+    return 1;
   } else {
     Serial1.println("Old Command: Discarding...");
+    return 0;
   }
+}
 
-  
+void set_interrupt()
+{
+  switch (blink_rate) { // Set interrupt timer to result in a period of...
+    case 0:
+      timer_preload = QUARTER_S;
+      break;
+    case 1:
+      timer_preload = HALF_S;
+      break;
+    case 2:
+      timer_preload = ONE_S;
+      break;
+    case 3:
+      timer_preload = TWO_S;
+      break;
+    case 4:
+      timer_preload = FOUR_S;
+      break;
+    default: 
+      break;
+  }
 }
 
 // MAIN LOOP
 void loop() {
-  // put your main code here, to run repeatedly:
+  
+  // Get serial input if available.
+  if (recv_serial())
+  {
+    if (set_led())
+    {
+      noInterrupts();  // disable all interrupts
+      set_interrupt();
+      TIMER1_OVF_vect;
+      interrupts();    // enable all interrupts
+    }
+  }
 
+  ///////////////
+  delay(20);   // This Timer does not need to be included once integrated in 6LoWPAN code.
+  ///////////////
 }
