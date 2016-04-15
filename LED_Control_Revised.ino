@@ -33,7 +33,7 @@ int ledW = 5;
 int LED_status = LOW; // LED on/off state, active HIGH.
 const int color_settings[7][4] = {OFF, GREEN, BLUE, RED, WHITE, PURPLE, YELLOW}; // Complete LED configs for each color.
 unsigned long oldCommand = 0x00000000; // Command input from control device.
-unsigned long newCommand = 0x00000000; // Assumed to be 8 bytes hex value.
+unsigned long newCommand = 0x00000000; // Assumed to be 4 byte hex value.
 int brightness = 0;                    // how bright the LED is.
 int color = 0;                         // the hex command converted to binary.
 int blink_rate = 0;                    // Blink rate.
@@ -87,28 +87,35 @@ ISR(TIMER1_OVF_vect)        // interrupt service routine for maintaining blink r
 // FUNCTIONS
 int recv_serial() // Returns 1 if data was received, returns 0 otherwise.
 {
-  if (Serial1.available() > 0) {
-          // read the incoming byte:
-          newCommand = Serial1.read();
-  
-          // say what you got:
-          Serial1.print("I received: ");
-          Serial1.println(newCommand, HEX);
-          return 1;
-  }
-  return 0;
+  if (Serial1.available() > 0){
+    newCommand = 0;
+    char buff[8];
+    int i = 0;
+    
+    while (Serial1.available() > 0){
+      buff[i] = Serial1.read(); // read the incoming byte:
+      i++;
+      delay(5);
+    }
+    newCommand = strtoul(buff, NULL, 16);
+    
+    // say what you got:
+    Serial1.print("I received: ");
+    Serial1.println(newCommand, HEX);
+    return 1;
+  } else return 0;
 }
 
 int set_led() // Returns 1 if command is new, returns 0 otherwise.
 {
   // If received command is newer, deconstruct into individual instructions.
-  if (newCommand > oldCommand and newCommand != -1)
+  if (newCommand > oldCommand)
   {
     oldCommand = newCommand;
     blink_rate = oldCommand & BLINK;
-    color = (oldCommand >> COLORSHIFT) & COLOR;
-    brightness = (oldCommand >> BRIGHTNESSSHIFT) & BRIGHTNESS;
-    Serial.println("New command: Parsed");
+    color = (oldCommand & COLOR) >> COLORSHIFT;
+    brightness = (oldCommand & BRIGHTNESS) >> BRIGHTNESSSHIFT;
+    Serial1.println("New command: Parsed");
     return 1;
   } else {
     Serial1.println("Old Command: Discarding...");
