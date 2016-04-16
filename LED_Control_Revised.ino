@@ -16,37 +16,69 @@
 
 
 #define WHITE  {0, 0, 0, 1}
-#define BLUE   {0, 0, 1, 0}
-#define GREEN  {0, 1, 0, 0}
-#define RED    {1, 0, 0, 0}
-#define PURPLE {1, 0, 1, 0}
-#define YELLOW {1, 1, 0, 0}
+#define BLUE   {0, 1, 0, 0}
+#define GREEN  {1, 0, 0, 0}
+#define RED    {0, 0, 1, 0}
+#define PURPLE {0, 1, 1, 0}
+#define YELLOW {1, 0, 1, 0}
 #define OFF    {0, 0, 0, 0}
 
-// LED COLOR-PIN ASSOCIATION
-int ledG = 2;
-int ledB = 3;
-int ledR = 4;
-int ledW = 5;
+#define LED_G  0
+#define LED_B  1
+#define LED_R  2
+#define LED_W  3
+
+// LED COLOR-PIN ASSOCIATION ARRAY
+int led_pins[4] = {2, 3, 4, 5};
+//              = {G, B, R, W}
 
 // ALGORITHM VARIABLES
-int LED_status = LOW; // LED on/off state, active HIGH.
+int LED_status[4] = {LOW, LOW, LOW, LOW}; // LED on/off state, active HIGH.
 const int color_settings[7][4] = {OFF, GREEN, BLUE, RED, WHITE, PURPLE, YELLOW}; // Complete LED configs for each color.
 unsigned long oldCommand = 0x00000000; // Command input from control device.
 unsigned long newCommand = 0x00000000; // Assumed to be 4 byte hex value.
-int brightness = 0;                    // how bright the LED is.
+static int brightness = 0;                    // how bright the LED is.
 int color = 0;                         // the hex command converted to binary.
 int blink_rate = 0;                    // Blink rate.
 unsigned long previousMillis = 0;      // will store last time LED was updated.
-int timer_preload = 57723;             // Default set to 1 second period. To calculate value for a desired delay, just use
+unsigned int timer_preload = 57723;             // Default set to 1 second period. To calculate value for a desired delay, just use
                                        // timer_preload = 65536 - 15625x, where x is the desired time in seconds.
+/*
+INSTRUCTION NOTES: 4-Byte hex value (0x00000000). Must be received as 
+a string representation of a hex value (eg. "0x00012411", half second 
+period of the color green at 164 brightness). 
+
+Two most significant bytes are timestamp: 0x0000----
+Second byte is brightness:                0x----00--
+Top 4 bits of last byte is color:         0x------0-
+bottom 4 bits of last byte is blink-rate: 0x-------0
+
+Timestamp: Time in milliseconds that the instruction was sent. Used as
+           a reference to determine if this is a new command. 
+
+Brightness: 8 bit resolution (0-256).
+
+Color:  0 = OFF
+        1 = GREEN
+        2 = BLUE
+        3 = RED
+        4 = WHITE
+        5 = PURPLE
+        6 = YELLOW
+
+Blink Rate:  0 = Quarter second period.
+             1 = half second period.
+             2 = One second period.
+             3 = Two second period.
+             4 = Four second period.
+*/
 
 // SETUP
 void setup() {
-  pinMode(ledR, OUTPUT);
-  pinMode(ledG, OUTPUT);
-  pinMode(ledB, OUTPUT);
-  pinMode(ledW, OUTPUT);
+  pinMode(led_pins[LED_G], OUTPUT);
+  pinMode(led_pins[LED_B], OUTPUT);
+  pinMode(led_pins[LED_R], OUTPUT);
+  pinMode(led_pins[LED_W], OUTPUT);
 
   // initialize timer1 
   noInterrupts();           // disable all interrupts
@@ -72,13 +104,13 @@ ISR(TIMER1_OVF_vect)        // interrupt service routine for maintaining blink r
   {
     if (color_settings[color][i])
     {
-      if (LED_status)
+      if (LED_status[i])
       {
-        analogWrite(ledR, 0);
-        LED_status = !LED_status;
+        analogWrite(led_pins[i], 0);
+        LED_status[i] = !LED_status[i];
       } else {
-        analogWrite(ledR, brightness);
-        LED_status = !LED_status;
+        analogWrite(led_pins[i], brightness);
+        LED_status[i] = !LED_status[i];
       }
     }
   }
@@ -156,6 +188,11 @@ void loop() {
     {
       noInterrupts();  // disable all interrupts
       set_interrupt();
+      analogWrite(led_pins[LED_G], 0);
+      analogWrite(led_pins[LED_B], 0);
+      analogWrite(led_pins[LED_B], 0);
+      analogWrite(led_pins[LED_W], 0);
+      for (int i = 0; i < 4; i++) {LED_status[i] = 0;}
       TIMER1_OVF_vect;
       interrupts();    // enable all interrupts
     }
