@@ -28,6 +28,9 @@
 #define LED_R  2
 #define LED_W  3
 
+#define START_LED_TIMER TCCR1B |= (1 << CS10)|(1 << CS12)
+#define STOP_LED_TIMER  TCCR1B = 0
+
 // LED COLOR-PIN ASSOCIATION ARRAY
 int led_pins[4] = {2, 3, 4, 5};
 //              = {G, B, R, W}
@@ -58,19 +61,20 @@ Timestamp: Time in milliseconds that the instruction was sent. Used as
 
 Brightness: 8 bit resolution (0-256).
 
-Color:  0 = OFF
-        1 = GREEN
+Color:  1 = GREEN
         2 = BLUE
         3 = RED
         4 = WHITE
         5 = PURPLE
         6 = YELLOW
 
-Blink Rate:  0 = Quarter second period.
-             1 = half second period.
-             2 = One second period.
-             3 = Two second period.
-             4 = Four second period.
+Blink Rate:  0 = Static Off.
+             1 = Quarter second period.
+             2 = half second period.
+             3 = One second period.
+             4 = Two second period.
+             5 = Four second period.
+             6 = Static ON.
 */
 
 // SETUP
@@ -82,8 +86,8 @@ void setup() {
 
   // initialize timer1 
   noInterrupts();           // disable all interrupts
-  TCCR1A = 0;
-  TCCR1B = 0;
+  TCCR1A = 0;               //
+  TCCR1B = 0;               // clear timer registers
 
   TCNT1 = 57723;            // preload timer 65536-16MHz/256/2Hz
   TCCR1B |= (1 << CS12);    // 1024 prescaler 
@@ -159,19 +163,41 @@ void set_interrupt()
 {
   switch (blink_rate) { // Set interrupt timer to result in a period of...
     case 0:
-      timer_preload = QUARTER_S;
+      // Should be off due to reset code prior to this function call.
       break;
     case 1:
-      timer_preload = HALF_S;
+      timer_preload = QUARTER_S;
+      TIMER1_OVF_vect; // Manual call to ISR to set LED initial state.
+      START_LED_TIMER;
       break;
     case 2:
-      timer_preload = ONE_S;
+      timer_preload = HALF_S;
+      TIMER1_OVF_vect;
+      START_LED_TIMER;
       break;
     case 3:
-      timer_preload = TWO_S;
+      timer_preload = ONE_S;
+      TIMER1_OVF_vect;
+      START_LED_TIMER;
       break;
     case 4:
+      timer_preload = TWO_S;
+      TIMER1_OVF_vect;
+      START_LED_TIMER;
+      break;
+    case 5:
       timer_preload = FOUR_S;
+      TIMER1_OVF_vect;
+      START_LED_TIMER;
+      break;
+    case 6:
+      for (int i = 0; i < 4; i++)
+      {
+        if (color_settings[color][i])
+        {
+          analogWrite(led_pins[i], brightness);
+        }
+      }
       break;
     default: 
       break;
@@ -186,15 +212,14 @@ void loop() {
   {
     if (set_led())
     {
-      noInterrupts();  // disable all interrupts
-      set_interrupt();
+      STOP_LED_TIMER;  // disable LED interrupt
       analogWrite(led_pins[LED_G], 0);
       analogWrite(led_pins[LED_B], 0);
-      analogWrite(led_pins[LED_B], 0);
+      analogWrite(led_pins[LED_R], 0);
       analogWrite(led_pins[LED_W], 0);
       for (int i = 0; i < 4; i++) {LED_status[i] = 0;}
-      TIMER1_OVF_vect;
-      interrupts();    // enable all interrupts
+      
+      set_interrupt();
     }
   }
 
