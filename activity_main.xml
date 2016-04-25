@@ -1,0 +1,112 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context=".MainActivity">
+
+    <!-- Welcome to the TILN Application title-->
+    <TextView
+        android:id="@+id/AppTitleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Welcome to the TILN Application!"
+        android:layout_marginTop="1dp"/>
+
+    <!-- Color heading-->
+    <TextView
+        android:id="@+id/ColorText"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Color"
+        android:layout_marginTop="32dp"/>
+
+
+    <!-- Dropdown menu of the colors-->
+    <Spinner
+        android:id="@+id/ColorSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/btn_dropdown"
+        android:spinnerMode="dropdown"
+        android:layout_below="@+id/ColorText"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <!-- Blink rate heading-->
+    <TextView
+        android:id="@+id/BlinkRateText"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Blink Rate"
+        android:layout_marginTop="160dp"/>
+
+
+    <!-- Dropdown menu of the Blinkrate-->
+    <Spinner
+        android:id="@+id/BlinkrateSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/btn_dropdown"
+        android:spinnerMode="dropdown"
+        android:layout_below="@+id/BlinkRateText"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <!-- Brightness heading-->
+    <TextView
+        android:id="@+id/BrightnessText"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Brightness"
+        android:layout_marginTop="280dp"/>
+
+    <!-- Brightness slider-->
+    <SeekBar
+        android:id="@+id/BrightnessBar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:max="255"
+        android:layout_marginTop="28dp"
+        android:layout_below="@+id/BrightnessText"
+        android:layout_centerHorizontal="true"
+        android:indeterminate="false" />
+
+    <!-- Send Instructions button-->
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send Instructions"
+        android:id="@+id/buttonSend"
+        android:onClick="onClickSend"
+        android:layout_marginTop="27dp"
+        android:layout_below="@+id/BrightnessBar"
+        android:layout_toRightOf="@+id/BlinkRateText"
+        android:layout_toEndOf="@+id/BlinkRateText" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/BrightnessBar"/>
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Begin"
+        android:id="@+id/buttonStart"
+        android:layout_alignParentRight="true"
+        android:onClick="onClickStart" />
+
+
+
+
+</RelativeLayout>
