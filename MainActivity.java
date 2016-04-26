@@ -170,8 +170,8 @@ public class MainActivity extends Activity {
                         // Display the value in textview
                         textView.setText(progress + "/" + seekBar.getMax() + "\n" + "\n");
 
-                        //add hex values here
-                        SliderHex = String.valueOf(progress);
+                        //add hex values here Integer.toHexString(num);
+                        SliderHex =  Integer.toHexString(num); //String.valueOf(progress);
                     }
                 });
     }
