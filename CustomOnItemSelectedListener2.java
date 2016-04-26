@@ -15,27 +15,27 @@ public class CustomOnItemSelectedListener2 implements AdapterView.OnItemSelected
         switch (pos){
             case 0:
                 //no blink
-                BlinkHex = "0x1";
+                BlinkHex = "1";
                 break;
             case 1:
                 //1/2 second
-                BlinkHex = "0x2";
+                BlinkHex = "2";
                 break;
             case 2:
                 //1/4 second
-                BlinkHex = "0x3";
+                BlinkHex = "3";
                 break;
             case 3:
                 //1 second
-                BlinkHex = "0x4";
+                BlinkHex = "4";
                 break;
             case 4:
                 //2 second
-                BlinkHex = "0x5";
+                BlinkHex = "5";
                 break;
             case 5:
                 //4 second;
-                BlinkHex = "0x6";
+                BlinkHex = "6";
                 break;
         }
         //Toast.makeText(parent.getContext(), "Blink rate : " + parent.getItemAtPosition(pos).toString(), Toast.LENGTH_SHORT).show();
